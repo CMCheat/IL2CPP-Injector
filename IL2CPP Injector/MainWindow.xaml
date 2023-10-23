@@ -1,0 +1,51 @@
+﻿<Window x:Class="IL2CPP_Injector.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IL2CPP_Injector"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        Title="IL2CPP Injector" Height="400" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ListView Name="processListView" Grid.ColumnSpan="3" Grid.Row="0" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name" />
+                    <GridViewColumn DisplayMemberBinding="{Binding PID}" Header="PID" />
+                    <GridViewColumn DisplayMemberBinding="{Binding ModuleCount}" Header="Module Count" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button Name="refreshlistButton" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Width="200"
+                materialDesign:ShadowAssist.ShadowAnimationDuration="0:0:0.5"
+                Style="{StaticResource MaterialDesignRaisedDarkButton}" Click="refreshlistButton_Click">
+            Refresh Process List
+        </Button>
+
+        <Button Name="injectDllButton" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Width="200"
+                materialDesign:ShadowAssist.ShadowAnimationDuration="0:0:0.5"
+                Style="{StaticResource MaterialDesignRaisedDarkButton}" Click="injectDllButton_Click">
+            Inject Dll
+        </Button>
+    </Grid>
+</Window>
