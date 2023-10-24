@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using MaterialDesignThemes.Wpf;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,21 +22,30 @@ namespace IL2CPP_Injector
 
         private void injectDllButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedProcess = (ProcessData)processListView.SelectedItem;
-            string dllPath = string.Empty;
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if((bool)openFileDialog.ShowDialog()!)
+            if (processListView.SelectedItem == null)
             {
-                dllPath = openFileDialog.FileName;
+                new ToastContentBuilder().SetToastDuration(ToastDuration.Short).AddText("No Process Selected!").Show();
+                return;
             }
 
-            nint hProc = Imports.OpenProcess(0xFFFF, false, selectedProcess.PID);
-            nint loadLibraryProc = Imports.GetProcAddress(Imports.GetModuleHandle("kernel32.dll"), "LoadLibraryA");
-            nint allocated =
-                Imports.VirtualAllocEx(hProc, IntPtr.Zero, (uint)dllPath.Length + 1, 0x00001000 | 0x00002000, 0x40);
-            Imports.WriteProcessMemory(hProc, allocated, Encoding.UTF8.GetBytes(dllPath), (uint)dllPath.Length + 1, out _);
-            Imports.CreateRemoteThread(hProc, IntPtr.Zero, 0, loadLibraryProc, allocated, 0, IntPtr.Zero);
+            var selectedProcess = (ProcessData)processListView.SelectedItem;
+            Task.Factory.StartNew(() =>
+            {
+                string dllPath = string.Empty;
+
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if ((bool)openFileDialog.ShowDialog()!)
+                {
+                    dllPath = openFileDialog.FileName;
+                }
+
+                nint hProc = Imports.OpenProcess(0xFFFF, false, selectedProcess.PID);
+                nint loadLibraryProc = Imports.GetProcAddress(Imports.GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+                nint allocated =
+                    Imports.VirtualAllocEx(hProc, IntPtr.Zero, (uint)dllPath.Length + 1, 0x00001000 | 0x00002000, 0x40);
+                Imports.WriteProcessMemory(hProc, allocated, Encoding.UTF8.GetBytes(dllPath), (uint)dllPath.Length + 1, out _);
+                Imports.CreateRemoteThread(hProc, IntPtr.Zero, 0, loadLibraryProc, allocated, 0, IntPtr.Zero);
+            });
         }
 
         private void refreshlistButton_Click(object sender, RoutedEventArgs e)
